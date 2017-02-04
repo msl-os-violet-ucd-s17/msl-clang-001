@@ -1,103 +1,243 @@
-## Operating Systems Concepts: Programming Assignment C1
+#Programming Assignment 1
+##Intro/Problem Discription
+For our first program assignment we were tasked with creating a type of concordance with
+a binary tree structure, this program will read in a list of words from a given word file before
+adding each word to a binary tree structure. After reading in all words and counting the number
+of occurrences in with each word we then output all data to a separate file before deleteing
+the tree and closing the program.
 
-_data structures and pointers in the C language_
-
-* * * 
-
-### Goals
-
-1. Practice development in the C programming language.
-2. Practice explicit memory allocation and deallocation.
-3. Practice creating and manipulate data structures (arrays and `struct`s).
-4. Practice working with pointers.
-4. Practice writing algorithms for these data structures.
-5. Prepare for [C2](https://github.com/ivogeorg/msl-clang-002).
-6. Develop good coding style.
-
-### Synopsis
-
-This is a warmup assignment, meant to give you a problem which involves major features of the C language but is not hard in itself. You need to read in a file with English words and output a file where the words are counted and sorted. You need to use a binary tree as the fundamental structure.
-
-### Submission
-
-You need to fork this repository and `git clone` it to your development machines. When you are done and your code works, `git commit` all your changes and `git push` to your forked (aka **remote** repository. Work in the **master** branch. This assignment will not have a test suite like the following ones, so you don't have to install [cmocka](https://cmocka.org/). Your output will only be compared to the correct output.
-
-Submissions are **one** per team. If you haven't done so, create a git account for your team. The name should look like **msl-os-[color]-[school]-[term]**. For example, **msl-os-orange-msud-s17** or **msl-os-black-ucd-s17**. (If you want, you can create an [organization](https://github.com/blog/674-introducing-organizations) but that might be overkill.) Make all team submissions from this account. 
-
-### Grading
-
-This assignment is pass/fail and carries no score. Note that good coding style will be important for further assignments so use this opportunity to develop it.
-
-### Due date
-
-The assignment is due on **Mon, Feb 6, at 23:59 Mountain time**. The last commit to your repository before the deadline will be graded.
-
-### Honor code
-
-Free Github repositories are public so you can look at each other's code. Please, don't do that. You can discuss any programming topics and the assignments in general but sharing of solutions diminishes the individual learning experience of many people. Assignments might be randomly checked for plagiarism and a plagiarism claim may be raised against you.
-
-Note that PA1 one is an _individual_ assignment, not a _team_ assignment like the upcoming Pintos assignments.
-
-### Use of libraries
-
-For this assignment, no external libraries should be used, except for the ANSI C Standard Library. The implementation of the data structures should be your own. We will use library implementations of data structures and programming primitives in the Pintos assignments.
-
-### Coding style
-
-Familiarize yourself with and start the following [coding style guide](http://courses.cms.caltech.edu/cs11/material/c/mike/misc/c_style_guide.html). While you are not expected to follow every point of it, you should try to follow it enought to get a feel for what is good style and bad style. C code can quickly become [unreadable](http://www.ioccc.org/) and difficult to maintain.
-
-### References
-
-A minimal [C Reference](https://cs50.harvard.edu/resources/cppreference.com/), which should be sufficient for your needs.
-
-The [C98 Library Reference](https://www-s.acm.illinois.edu/webmonkeys/book/c_guide/) is more complete.
-
-The [C11 Standard](http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf) is just provided for completeness, and you shouldn't need to read it, except peruse it out of curiosity.
-
-Two guides for implementation of `malloc()`: [here](http://danluu.com/malloc-tutorial/) and [here](http://www.inf.udec.cl/~leo/Malloc_tutorial.pdf).
-
-### Detailed Instructions
-
-#### Input
-
-The input will be a file containing a single line (i.e. no new lines) of all-lower-case English words. You need to read it in to sort them. The file will be in the same directory as your executable and will appear as the first argument when your program is run. To test input files are provided for you. A much larger file will be used in addition to test your program.
-
-#### Output
-
-For each input file `input01.txt`, generate an output file in the same directory, called `myoutput01.txt`. Use the provided `output01.file` to compare against. The output should be an alphabetized list of unique words and their counts in the file, as follows:
-
+##Design
+For starters, the tree structure we use to hold the words is a binary tree struct, comprised of
+the following:
 ```
-one: 4
-three: 5
-years: 23
+//The custom struct that forms each node in the tree
+struct binarynode {
+    char * word;                    //Each node will have a dynamically allocated char array to hold the node's word
+    int count;                      //An int that counts how many times a word is found within the input file
+    struct binarynode * left;       //Left and Right pointers to other nodes that form our tree
+    struct binarynode * right;
+
+};
 ```
 
-#### Data structures
+Each node in the tree is dynamically allocated but the word array within each node
+is also dynamically allocated, we also have an int that holds the number of times a given word is
+found (default is 1) and then the standard left and right self referential node pointers that
+we will use when allocated a new node in the tree.
 
-You should use a binary tree to keep the running count for words and keep them in alphabetical order. This means that if you have four words, say *one, two, three, go, one*, that come in this order, you will end up with a tree that looks like:
-
+In addition to this our tree comes with several functions that help in managing  the tree structure,
+the following lists the lookup function:
 ```
-    one(2)
-  /     \
- go(1)  two(1)
-        /
-     three(1)
+//This function will search the tree for a given word within a given tree and returns a pointer to that node.
+//If it cannot find a node that has the word it will return a pointer to the leaf node it should be inserted into.
+struct binarynode * lookup (struct binarynode *node, char * searchword) {
+
+
+    do
+    {
+        if (node == NULL)                               //If the node is null we return it as the word does not exist
+        {                                               //within the tree. Otherwise, we traverse the tree based on
+            return node;                                //the lexicographic order of the tree to either find the node
+        }                                               //that contains the word we are searching for or to find
+        else if((strcmp(searchword, node->word) == 0))  //where the new word should be placed
+        {
+            return node;
+        }
+        else if ((strcmp(searchword, node->word) < 0))
+        {
+            if(node->left != NULL)
+            {
+                node = node->left;
+            }
+            else
+            {
+                return node;
+            }
+        }
+        else if((strcmp(searchword, node->word) > 0))
+        {
+            if(node->right != NULL)
+            {
+                node = node->right;
+            }
+            else
+            {
+                return node;
+            }
+        }
+    }while (node != NULL);
+
+}
+```
+The purpose of this lookup function is two-fold, it will first look if the word that is given to it is
+the same as in the node it is currently at, if the two words (the word in the node and the word we
+passed to it) don't match we then decide if we should traverse the left or right path as this
+tree is sorted in lexicographic order, if the path we must traverse is NULL then we have
+found the location of where the new node should be created. In either case, the purpose of this
+function is ONLY to find the correct node in the tree and return the node. The insert function
+(listed next) then actually manipulates the tree and data in the tree
 ```
 
-Think what traversal you need to print the words in the tree in alphabetical order.
+//The insert function will either increment a given node's count member variable if it's given word and node
+//match or it will create a new node to insert the new word into the tree in lexicographic order, returns NULL if given
+//NULL
+struct binarynode * insert (struct binarynode *node,char * searchword, size_t wordsize) {
 
-The tree has to be a *self-referential* C `struct`, containing a dynamically allocated `word`, its integer `count`, and pointers to the `left` and `right` subtrees. In other words, a tree is equivalent to a single node of the tree.
+    if(node == NULL)                                //The function will return NULL if given NULL, if given a node to
+    {                                               //insert we will first check if the word is equal to the word in
+        return NULL;                                //node, leading to us increasing it's count, or we will create a
+    }                                               //new node with either the left or right pointer
 
-#### Functionality
+    if((strcmp(searchword, node->word)) == 0)
+    {
+        node->count++;
+    }
+    else if((strcmp(searchword, node->word)) < 0)
+    {
+        if(node->left == NULL)
+        {
+            node->left = (struct binarynode*) malloc(sizeof(struct binarynode));
+            node = node->left;
+            node->word = (char*)calloc(wordsize, sizeof(char));
+            strcpy(node->word, searchword);
+            node->count = 1;
+        }
+        else
+        {
+            printf("Error, given node has a left child\n");
+        }
 
-1. Read words from the file. Don't read in the whole file and then process it. Read it in chunks using a buffer.
-2. Tree lookup for the next word in the input. 
-3. If a word is in the tree, increment the count; if it isn't, dynamically allocate a new node; position and link it properly, and initialize the count to 1.
-4. When you are done with the input, you should have a complete tree. Use it to print out the output file.
-5. Destroy the tree, making sure you `free()` dynamic structures in the proper order.
-6. Your tree functions should be *recursive*.
+    }
+    else if((strcmp(searchword, node->word)) > 0)
+    {
+        if(node->right == NULL)
+        {
+            node->right = (struct binarynode*) malloc(sizeof(struct binarynode));
+            node = node->right;
+            node->word = (char*)calloc(wordsize, sizeof(char));
+            strcpy(node->word, searchword);
+            node->count = 1;
+        }
+        else
+        {
+            printf("Error, given node has a right child\n");
+        }
 
-#### README
+    }
 
-Overwrite the **README.md** file and describe your project (approach, data structures, algorithms, etc.). Use this opportunity to get to know *markdown*. It's a useful skill.
+}
+```
+Notice how the insert function does no movement within the tree and merely has three test
+cases, if the word it was given is the same as the word in the node then it increments the
+node's count variable and returns. Otherwise it inserts the new node into its proper
+child, left or right, depending on the lexicographic order of the words. Also note
+that if the pointer it must insert already has a node/data, then it was given an incorrect
+node by an outside function or program, to maintain the data structure the program prints
+an error message and then exits the function, not traversing or editing data in any way.
+```
+//Given a node, this function will delete every node beneath it including the given node itself. This is a recursive
+//implementation.
+struct binarynode * deletetree(struct binarynode  *root) {
+    if (root != NULL)                       //If the root pointer is not NULL then traverse all of that node's left and
+    {                                       //right children before deallocating the dynamic array for the word and then
+        deletetree(root->left);             //deallocating the node itself, setting it to NULL and then returning it
+        deletetree(root->right);
+        free(root->word);
+        free(root);
+        root = NULL;
+        return root;
+    }
+}
+```
+This is a simple recursive algorithm for deleting the entire tree, it deallocates each
+word array within each node and then deletes the node itself, setting the pointer to null
+and then returning it. We use the if statement to stop NULL pointers from getting dereferenced
+should one be passed into the function on accident
+```
+//This function recursively goes through a pre-order traversal and prints all words within the tree. Also outputs to file.
+void printtree(struct binarynode  *root, FILE *outputfile) {
+    if (root == NULL)
+    {
+        return;
+    }
+    printtree(root->left, outputfile);
+    printf("%s : %d\n",root->word, root->count);
+    fprintf(outputfile,"%s : %d \n",root->word, root->count);
+    printtree(root->right, outputfile);
+}
+```
+Similar to the deletetree function, the printtree function recursively moves through
+the tree and prints the word and count of each node. This is an in-order traversal which,
+due to the lexicographic ordering of the tree, will print the words in alphabetical order
+
+Finally we have the main function which handles file I/O, sets the root pointer, reads in the words,
+calls functions, and sets filenames to their correct index.
+```
+int main(int argc, char **argv) {
+    size_t slength;
+    struct binarynode *root = NULL;             //The two binarynode variables, one being the root pointer and the other
+    struct binarynode *searchnode = NULL;       //being the node we use with the lookup abd insert functions
+    char buffer[100];
+    char inputname[60];
+    strcpy(inputname, argv[1]);
+    char outputname[13] = "outputxx.txt";
+    FILE *output;
+    FILE *input;                                //This variable and the fopen command in the next line will open the text
+    input = fopen(argv[1], "r");                //file that contains the sentence we will read in to build our concordance
+                                                //*IMPORANT NOTE* the word file must be stored in your working directory
+                                                //for it to be read in correctly which you can set in your run configurations
+                                                //(Run->Edit Configurations->Working Directory), the file itself is a
+                                                //simple text file
+    outputname[6] = inputname[5];
+    outputname[7] = inputname[6];               //These two statements parse the index from the input filename and inserts
+                                                //the index into the output filename
+
+    output = fopen (outputname, "w");
+
+    while (fscanf(input, "%s", buffer) == 1)
+    {
+        slength = strlen(buffer) + 1;
+        if(root == NULL)
+        {
+            root = (struct binarynode*) malloc(sizeof(struct binarynode));
+            root->word = (char*)calloc(slength, sizeof(char));
+            strcpy(root->word, buffer);
+            root->count = 1;
+        }
+        else
+        {
+            searchnode = lookup(root, buffer);
+            insert(searchnode, buffer, slength);
+        }
+    }
+
+    printtree(root, output);
+    deletetree(root);
+
+    return 0;
+}
+```
+##File Structure and Usage
+The program will take in and read a textfile that is located in the same directory as the
+executable, for Clion this will be in the Cmake debug folder or where ever your working directory
+is set to in your run configurations. The file itself should contain no newline characters, punctuations,
+or special characters, just letters and whitespaces on a single line.
+
+#####IMPORTANT
+ALL TEXT FILES *MUST* BE OF THE FOLLOWING FORMAT: 
+
+inputxx.txt
+
+where "xx" are both numbers that list a specific index, 01 and 35 for example. The program will
+then output a similar text file with the format: 
+
+outputxx.txt
+
+Where the "xx" will correspond to the input file you gave the program (input34 will produce
+output34 etc.). The output file will list all the words in the tree in alphabetical order and will
+also list the number of times each word was found in the input file.
+
+#####NOTE
+The program may not return a filled in file when it first creates the output file, should this occur
+simply run the program again with the same input file to fill the output file with data.
 
