@@ -219,7 +219,7 @@ int main(int argc, char **argv) {
 ```
 ##File Structure and Usage
 The program will take in and read a textfile that is located in the same directory as the
-executable, for Clion this will be in the Cmake debug folder or where ever your working directory
+executable, for Clion this will be where ever your working directory
 is set to in your run configurations. The file itself should contain no newline characters, punctuations,
 or special characters, just letters and whitespaces on a single line.
 
@@ -234,8 +234,13 @@ then output a similar text file with the format:
 myoutputxx.txt
 
 Where the "xx" will correspond to the input file you gave the program (input34 will produce
-output34 etc.). The output file will list all the words in the tree in alphabetical order and will
-also list the number of times each word was found in the input file.
+myoutput34 etc.). The output file will list all the words in the tree in alphabetical order and will
+also list the number of times each word was found in the input file. Also in your CLion run 
+configurations is where your program arguments will be located, in order for the program to 
+correctly read your files you must pass the filename as the first argument, for example I would
+paste "input02.txt" (with quotes) into the program arguments section of your run
+configuration in order to read in the text file that should be located in your working directory,
+making sure that all program arguments are in the form listed above.
 
 #####NOTE
 The program may not return a filled in file when it first creates the output file, should this occur
