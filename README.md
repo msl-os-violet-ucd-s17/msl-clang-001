@@ -231,7 +231,7 @@ inputxx.txt
 where "xx" are both numbers that list a specific index, 01 and 35 for example. The program will
 then output a similar text file with the format: 
 
-outputxx.txt
+myoutputxx.txt
 
 Where the "xx" will correspond to the input file you gave the program (input34 will produce
 output34 etc.). The output file will list all the words in the tree in alphabetical order and will

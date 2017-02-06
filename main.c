@@ -141,7 +141,7 @@ int main(int argc, char **argv) {
     char buffer[100];
     char inputname[60];
     strcpy(inputname, argv[1]);
-    char outputname[13] = "outputxx.txt";
+    char outputname[15] = "myoutputxx.txt";
     FILE *output;
     FILE *input;                                //This variable and the fopen command in the next line will open the text
     input = fopen(argv[1], "r");                //file that contains the sentence we will read in to build our concordance
@@ -149,8 +149,8 @@ int main(int argc, char **argv) {
                                                 //for it to be read in correctly which you can set in your run configurations
                                                 //(Run->Edit Configurations->Working Directory), the file itself is a
                                                 //simple text file
-    outputname[6] = inputname[5];
-    outputname[7] = inputname[6];               //These two statements parse the index from the input filename and inserts
+    outputname[8] = inputname[5];
+    outputname[9] = inputname[6];               //These two statements parse the index from the input filename and inserts
                                                 //the index into the output filename
 
     output = fopen (outputname, "w");
