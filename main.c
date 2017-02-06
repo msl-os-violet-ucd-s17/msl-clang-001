@@ -78,6 +78,8 @@ struct binarynode * insert (struct binarynode *node,char * searchword, size_t wo
             node->word = (char*)calloc(wordsize, sizeof(char));
             strcpy(node->word, searchword);
             node->count = 1;
+            node->right = NULL;
+            node->left = NULL;
         }
         else
         {
@@ -94,6 +96,8 @@ struct binarynode * insert (struct binarynode *node,char * searchword, size_t wo
             node->word = (char*)calloc(wordsize, sizeof(char));
             strcpy(node->word, searchword);
             node->count = 1;
+            node->right = NULL;
+            node->left = NULL;
         }
         else
         {
@@ -160,6 +164,8 @@ int main(int argc, char **argv) {
             root->word = (char*)calloc(slength, sizeof(char));
             strcpy(root->word, buffer);
             root->count = 1;
+            root->left = NULL;
+            root->right = NULL;
         }
         else
         {
