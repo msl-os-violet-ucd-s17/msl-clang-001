@@ -23,7 +23,7 @@ struct binarynode * lookup (struct binarynode *node, char * searchword) {
     {
         if (node == NULL)                               //If the node is null we return it as the word does not exist
         {                                               //within the tree. Otherwise, we traverse the tree based on
-            return node;                                //the lexicographic order of the tree to either find the node
+            return NULL;                                //the lexicographic order of the tree to either find the node
         }                                               //that contains the word we are searching for or to find
         else if((strcmp(searchword, node->word) == 0))  //where the new word should be placed
         {
